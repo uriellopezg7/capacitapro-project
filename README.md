@@ -1,3 +1,3 @@
 CapacitaPro is a web platform for managing employee training: which courses exist, who is required to take them, who has completed them, and when they expire.
 
-ruleset test
+ruleset test 2
