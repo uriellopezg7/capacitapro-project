@@ -14,7 +14,7 @@ The project is inspired by a real system the author built three years ago as a s
 ## 2. Scope of version 1 (v1)
 
 **In scope:**
-- Employee management (manual entry and initial bulk upload from a file)
+- Employee management (manual entry and initial bulk upload from a file, and CSV export)
 - Training course management (with instructor, dates, duration, and the ability to split into sessions)
 - Manual assignment of courses to employees by HR/Admin
 - Completion tracking with automatic certificate generation
