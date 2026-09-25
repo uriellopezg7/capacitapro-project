@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client { 
+  provider = "prisma-client-js" 
+} 
+
+datasource db {
+  provider = "postgresql"
+  url      = env("CAPACITAPRO_DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  INSTRUCTOR
+}
+
+enum AssignmentStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         UserRole
+  createdAt    DateTime @default(now())
+}
+
+model Employee {
+  id             Int          @id @default(autoincrement())
+  name           String
+  employeeNumber Int          @unique
+  department     String
+  jobTitle       String
+  assignments    Assignment[]
+  attendances    Attendance[]
+}
+
+model Course {
+  id                       Int          @id @default(autoincrement())
+  title                    String
+  instructorEmployeeNumber Int
+  instructorName           String
+  startDate                DateTime
+  endDate                  DateTime
+  startTime                String
+  totalHours               Int
+  isRecertifiable          Boolean      @default(false)
+  validityMonths           Int?
+  notes                    String?
+  sessions                 Session[]
+  assignments              Assignment[]
+}
+
+model Session {
+  id              Int          @id @default(autoincrement())
+  course          Course       @relation(fields: [courseId], references: [id])
+  courseId        Int
+  sessionDate     DateTime
+  startTime       String
+  durationMinutes Int
+  attendances     Attendance[]
+}
+
+model Attendance {
+  id         Int      @id @default(autoincrement())
+  session    Session  @relation(fields: [sessionId], references: [id])
+  sessionId  Int
+  employee   Employee @relation(fields: [employeeId], references: [id])
+  employeeId Int
+  present    Boolean
+  recordedAt DateTime @default(now())
+
+  @@unique([sessionId, employeeId])
+}
+
+model Assignment {
+  id            Int               @id @default(autoincrement())
+  course        Course            @relation(fields: [courseId], references: [id])
+  courseId      Int
+  employee      Employee          @relation(fields: [employeeId], references: [id])
+  employeeId    Int
+  status        AssignmentStatus  @default(PENDING)
+  assignedDate  DateTime          @default(now())
+  completedDate DateTime?
+  certificate   Certificate?
+
+  @@unique([courseId, employeeId])
+}
+
+model Certificate {
+  id             Int        @id @default(autoincrement())
+  assignment     Assignment @relation(fields: [assignmentId], references: [id])
+  assignmentId   Int        @unique
+  issueDate      DateTime   @default(now())
+  expirationDate DateTime?
+  code           String     @unique
+}
