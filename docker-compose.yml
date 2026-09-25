@@ -7,9 +7,9 @@ services:
       POSTGRES_PASSWORD: devpassword
       POSTGRES_DB: capacitapro
     ports:
-      - "5432:5432"
+      - "5434:5432"
+
     volumes:
       - pgdata:/var/lib/postgresql/data
-
 volumes:
   pgdata:
