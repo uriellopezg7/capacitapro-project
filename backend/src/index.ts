@@ -52,3 +52,30 @@ app.post('/employees', {
     return { error: 'An employee with that employee number already exists.' }
   }
 })
+
+//GET EMPLOYEE BY ID//
+
+app.get('/employees/:id', {
+  schema: {
+    params: {
+      type: 'object',
+      required: ['id'],
+      properties: {
+        id: { type: 'integer' }
+      }
+    }
+  }
+}, async (request, reply) => {
+  const { id } = request.params as { id: number }
+
+  const employee = await prisma.employee.findUnique({
+    where: { id }
+  })
+
+  if (!employee) {
+    reply.code(404)
+    return { error: 'Employee not found.' }
+  }
+
+  return employee
+})
