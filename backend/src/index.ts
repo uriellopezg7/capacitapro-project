@@ -20,6 +20,21 @@ async function requireAuth(request: any, reply: any) {
   }
 }
 
+// Add a role-checking function //
+
+function requireRole(role: string) {
+  return async (request: any, reply: any) => {
+    await requireAuth(request, reply)
+    if (reply.sent) return
+
+    const user = request.user as { userId: number; role: string }
+    if (user.role !== role) {
+      reply.code(403)
+      return reply.send({ error: 'You do not have permission to perform this action.' })
+    }
+  }
+}
+
 const prisma = new PrismaClient()
 
 app.get('/health', async () => {
@@ -78,6 +93,7 @@ app.post('/employees', {
 //GET EMPLOYEE BY ID//
 
 app.get('/employees/:id', {
+  preHandler: requireRole('ADMIN'),
   schema: {
     params: {
       type: 'object',
@@ -104,6 +120,7 @@ app.get('/employees/:id', {
 
 //REGISTRATION ENDPOINT //
 app.post('/auth/register', {
+  preHandler: requireRole('ADMIN'),
   schema: {
     body: {
       type: 'object',
